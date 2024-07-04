@@ -1,0 +1,378 @@
+<html>
+<head>
+    <title>Quiz Challenge Makkalae!!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        #quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        #timer {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #d9534f;
+        }
+        .question-container {
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .question-container p {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        #pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        #submit {
+            display: none;
+            background-color: #2ecc71;
+            font-size: 1.1em;
+            padding: 15px 30px;
+        }
+        #submit:hover {
+            background-color: #27ae60;
+        }
+        #score-display {
+            display: none;
+            text-align: center;
+            font-size: 1.5em;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f1c40f;
+            color: #34495e;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>Quiz Challenge Makkalae!!</h1>
+        <div id="timer"></div>
+        <form id="quiz-form">
+            
+        </form>
+        <div id="pagination">
+            <button id="prev">Previous</button>
+            <span id="page-number"></span>
+            <button id="next">Next</button>
+        </div>
+        <button id="submit">Submit Quiz</button>
+        <div id="score-display"></div>
+    </div>
+
+    <script>
+    // Quiz questions
+    const questions = [
+        {
+            type: 'radio',
+            question: 'What is the capital of France?',
+            options: ['London', 'Berlin', 'Paris', 'Madrid'],
+            answer: 'Paris'
+        },
+        {
+            type: 'radio',
+            question: 'Which planet is known as the Red Planet?',
+            options: ['Mars', 'Venus', 'Jupiter', 'Saturn'],
+            answer: 'Mars'
+        },
+        {
+            type: 'checkbox',
+            question: 'Which of the following are prime numbers?',
+            options: ['2', '4', '7', '9', '11'],
+            answer: ['2', '7', '11']
+        },
+        {
+            type: 'radio',
+            question: 'Which is the largest ocean on Earth?',
+            options: ['Atlantic Ocean', 'Indian Ocean', 'Arctic Ocean', 'Pacific Ocean'],
+            answer: 'Pacific Ocean'
+        },
+        {
+            type: 'radio',
+            question: 'Who wrote "To Kill a Mockingbird"?',
+            options: ['Harper Lee', 'Mark Twain', 'John Steinbeck', 'F. Scott Fitzgerald'],
+            answer: 'Harper Lee'
+        },
+        {
+            type: 'radio',
+            question: 'What is the chemical symbol for gold?',
+            options: ['Au', 'Ag', 'Fe', 'Cu'],
+            answer: 'Au'
+        },
+        {
+            type: 'checkbox',
+            question: 'Which of these are programming languages?',
+            options: ['Java', 'HTML', 'Python', 'CSS', 'Ruby'],
+            answer: ['Java', 'Python', 'Ruby']
+        },
+        {
+            type: 'radio',
+            question: 'Which country is home to the Great Barrier Reef?',
+            options: ['Brazil', 'Australia', 'Indonesia', 'Mexico'],
+            answer: 'Australia'
+        },
+        {
+            type: 'radio',
+            question: 'What year did World War II end?',
+            options: ['1943', '1944', '1945', '1946'],
+            answer: '1945'
+        },
+        {
+            type: 'radio',
+            question: 'Who painted the Mona Lisa?',
+            options: ['Vincent van Gogh', 'Leonardo da Vinci', 'Pablo Picasso', 'Claude Monet'],
+            answer: 'Leonardo da Vinci'
+        },
+        {
+            type: 'checkbox',
+            question: 'Which of these are mammals?',
+            options: ['Dolphin', 'Shark', 'Whale', 'Octopus', 'Bat'],
+            answer: ['Dolphin', 'Whale', 'Bat']
+        },
+        {
+            type: 'radio',
+            question: 'What is the capital of Japan?',
+            options: ['Seoul', 'Beijing', 'Tokyo', 'Bangkok'],
+            answer: 'Tokyo'
+        },
+        {
+            type: 'radio',
+            question: 'Who discovered penicillin?',
+            options: ['Alexander Fleming', 'Marie Curie', 'Louis Pasteur', 'Joseph Lister'],
+            answer: 'Alexander Fleming'
+        },
+        {
+            type: 'radio',
+            question: 'What is the largest planet in our solar system?',
+            options: ['Earth', 'Mars', 'Jupiter', 'Saturn'],
+            answer: 'Jupiter'
+        },
+        {
+            type: 'checkbox',
+            question: 'Which of these elements are noble gases?',
+            options: ['Helium', 'Oxygen', 'Neon', 'Chlorine', 'Argon'],
+            answer: ['Helium', 'Neon', 'Argon']
+        },
+        {
+            type: 'radio',
+            question: 'Which of these is not a primary color?',
+            options: ['Red', 'Blue', 'Yellow', 'Green'],
+            answer: 'Green'
+        },
+        {
+            type: 'radio',
+            question: 'What is the largest mammal on Earth?',
+            options: ['African Elephant', 'Blue Whale', 'Giraffe', 'Hippopotamus'],
+            answer: 'Blue Whale'
+        },
+        {
+            type: 'radio',
+            question: 'Which planet is known as the "Morning Star"?',
+            options: ['Mars', 'Venus', 'Mercury', 'Jupiter'],
+            answer: 'Venus'
+        },
+        {
+            type: 'checkbox',
+            question: 'Which of these countries are in Africa?',
+            options: ['Nigeria', 'Brazil', 'Kenya', 'Thailand', 'Egypt'],
+            answer: ['Nigeria', 'Kenya', 'Egypt']
+        },
+        {
+            type: 'radio',
+            question: 'What is the hardest natural substance on Earth?',
+            options: ['Gold', 'Iron', 'Diamond', 'Quartz'],
+            answer: 'Diamond'
+        }
+    ];
+
+    let currentPage = 1;
+    const questionsPerPage = 5;
+    const totalPages = Math.ceil(questions.length / questionsPerPage);
+    let timer;
+    const quizDuration = 120; // 2 minutes in seconds
+    let timeLeft = quizDuration;
+    let userAnswers = new Array(questions.length).fill(null);
+
+    const quizForm = document.getElementById('quiz-form');
+    const prevButton = document.getElementById('prev');
+    const nextButton = document.getElementById('next');
+    const submitButton = document.getElementById('submit');
+    const pageNumber = document.getElementById('page-number');
+    const timerDisplay = document.getElementById('timer');
+    const scoreDisplay = document.getElementById('score-display');
+
+    function initQuiz() {
+        renderQuestions();
+        updatePagination();
+        startTimer();
+    }
+
+    function renderQuestions() {
+        quizForm.innerHTML = '';
+        const startIndex = (currentPage - 1) * questionsPerPage;
+        const endIndex = startIndex + questionsPerPage;
+        const pageQuestions = questions.slice(startIndex, endIndex);
+
+        pageQuestions.forEach((q, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question-container';
+            questionDiv.innerHTML = `<p>${startIndex + index + 1}. ${q.question}</p>`;
+
+            if (q.type === 'radio') {
+                q.options.forEach(option => {
+                    const checked = userAnswers[startIndex + index] === option ? 'checked' : '';
+                    questionDiv.innerHTML += `
+                        <label>
+                            <input type="radio" name="q${startIndex + index}" value="${option}" ${checked}>
+                            ${option}
+                        </label><br>`;
+                });
+            } else if (q.type === 'checkbox') {
+                q.options.forEach(option => {
+                    const checked = userAnswers[startIndex + index] && userAnswers[startIndex + index].includes(option) ? 'checked' : '';
+                    questionDiv.innerHTML += `
+                        <label>
+                            <input type="checkbox" name="q${startIndex + index}" value="${option}" ${checked}>
+                            ${option}
+                        </label><br>`;
+                });
+            }
+
+            quizForm.appendChild(questionDiv);
+        });
+
+        quizForm.querySelectorAll('input').forEach(input => {
+            input.addEventListener('change', saveAnswer);
+        });
+    }
+
+    function saveAnswer(e) {
+        const questionIndex = parseInt(e.target.name.slice(1));
+        if (questions[questionIndex].type === 'radio') {
+            userAnswers[questionIndex] = e.target.value;
+        } else if (questions[questionIndex].type === 'checkbox') {
+            userAnswers[questionIndex] = Array.from(document.getElementsByName(`q${questionIndex}`))
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+        }
+    }
+
+    function updatePagination() {
+        pageNumber.textContent = `Page ${currentPage} of ${totalPages}`;
+        prevButton.disabled = currentPage === 1;
+        nextButton.disabled = currentPage === totalPages;
+        submitButton.style.display = currentPage === totalPages ? 'inline-block' : 'none';
+    }
+
+    prevButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderQuestions();
+            updatePagination();
+        }
+    });
+
+    nextButton.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderQuestions();
+            updatePagination();
+        }
+    });
+
+    submitButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        clearInterval(timer);
+        showScorePage();
+    });
+
+    function showScorePage() {
+        let score = 0;
+        questions.forEach((q, index) => {
+            if (q.type === 'checkbox') {
+                if (JSON.stringify(userAnswers[index]?.sort()) === JSON.stringify(q.answer.sort())) {
+                    score++;
+                }
+            } else {
+                if (userAnswers[index] === q.answer) {
+                    score++;
+                }
+            }
+        });
+
+        const percentage = (score / questions.length) * 100;
+
+        quizForm.style.display = 'none';
+        submitButton.style.display = 'none';
+        prevButton.style.display = 'none';
+        nextButton.style.display = 'none';
+        pageNumber.style.display = 'none';
+        timerDisplay.style.display = 'none';
+
+        scoreDisplay.style.display = 'block';
+        scoreDisplay.innerHTML = `
+            <h2>Quiz Completed!</h2>
+            <p>Your score: ${score}/${questions.length}</p>
+            <p>Percentage: ${percentage.toFixed(2)}%</p>
+            <p>${getScoreMessage(percentage)}</p>
+        `;
+    }
+
+    function getScoreMessage(percentage) {
+        if (percentage >= 90) return "Outstanding! You're a quiz master!";
+        if (percentage >= 70) return "Great job! You really know your stuff!";
+        if (percentage >= 50) return "Good effort! There's room for improvement.";
+        return "Keep practicing! You'll do better next time.";
+    }
+
+    function startTimer() {
+        timer = setInterval(() => {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `Time left: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft === 0) {
+                clearInterval(timer);
+                showScorePage();
+            }
+            timeLeft--;
+        }, 1000);
+    }
+
+    initQuiz();
+    </script>
+</body>
+</html>
